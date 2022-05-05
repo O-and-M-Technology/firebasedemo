@@ -59,9 +59,9 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionIndex()
+    public function actionIndex($id)
     {
-        return $this->render('index');
+        return $this->render('index' , ["idSerre" => $id]);
     }
 
     /**

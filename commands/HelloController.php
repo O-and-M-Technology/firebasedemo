@@ -11,6 +11,10 @@ namespace app\commands;
 use yii\console\Controller;
 use yii\console\ExitCode;
 use Kreait\Firebase\Factory;
+use app\models\Peripherique;
+use app\models\Historique;
+use Google\Cloud\Core\Timestamp;
+
 /**
  * This command echoes the first argument that you have entered.
  *
@@ -46,10 +50,22 @@ class HelloController extends Controller
         /**
          *          the keys tree
          */
-        $reference = $realtimeDatabase->getReference('/detect_1');
-        $snapshot = $reference->getSnapshot();
 
-        echo  $snapshot->getValue();
+        
+        foreach( Peripherique::find()->all() as $_perepherique ){
+            $reference = $realtimeDatabase->getReference( "/". $_perepherique->Key);
+            $snapshot = $reference->getSnapshot();
+            echo $snapshot->getValue();
+            if($snapshot->getValue() != null){
+                $_historique = new Historique();
+                $_historique->Temps = 0; 
+                $_historique->Temps_creation = strtotime("now");
+                $_historique->Valeur = $snapshot->getValue(); 
+                $_historique->Peripherique_idPeripherique = $_perepherique->idPeripherique;
+                $_historique->Utilisateur_idUtilisateur = 1;
+                $_historique->save(false);
+            }
+        }
 
         return ExitCode::OK;
     }
